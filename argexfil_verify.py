@@ -20,7 +20,7 @@ def login(server, username, password):
     return session
 
 def resource_action(server, resource, action, session):
-    response = session.get(f"{server}/api/v1/account/can-i/{resource}/{action}", verify=False)
+    response = session.get(f"{server}/api/v1/account/can-i/{resource}/{action}/*/", verify=False)
     if response.status_code == 200 and response.json().get("value") == "yes":
         print(f"User has permission to {action} {resource}.")
         return 1
